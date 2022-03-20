@@ -2,7 +2,27 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-function Square(props) {
+type Squares = string[];
+
+interface GameState {
+  history: {
+    squares: Squares;
+  }[];
+  stepNumber: number;
+  xIsNext: boolean;
+}
+
+interface BoardProps {
+  squares: Squares;
+  onClick: (i: number) => void;
+}
+
+interface SquareProps {
+  value: string;
+  onClick: () => void;
+}
+
+function Square(props: SquareProps): JSX.Element {
   return (
     <button className="square" onClick={props.onClick}>
       {props.value}
@@ -10,12 +30,8 @@ function Square(props) {
   );
 }
 
-class Board extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  renderSquare(i) {
+class Board extends React.Component<BoardProps> {
+  renderSquare(i: number): JSX.Element {
     return (
       <Square
         value={this.props.squares[i]}
@@ -24,7 +40,7 @@ class Board extends React.Component {
     );
   }
 
-  render() {
+  render(): JSX.Element {
     return (
       <div>
         <div className="board-row">
@@ -47,8 +63,8 @@ class Board extends React.Component {
   }
 }
 
-class Game extends React.Component {
-  constructor(props) {
+class Game extends React.Component<any, GameState> {
+  constructor(props: any) {
     super(props);
     this.state = {
       history: [
@@ -61,7 +77,7 @@ class Game extends React.Component {
     };
   }
 
-  handleClick(i) {
+  handleClick(i: number): void {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -80,14 +96,14 @@ class Game extends React.Component {
     });
   }
 
-  jumpTo(step) {
+  jumpTo(step: number): void {
     this.setState({
       stepNumber: step,
       xIsNext: step % 2 === 0,
     });
   }
 
-  render() {
+  render(): JSX.Element {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
@@ -101,7 +117,7 @@ class Game extends React.Component {
       );
     });
 
-    let status;
+    let status: string;
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
@@ -125,7 +141,7 @@ class Game extends React.Component {
   }
 }
 
-function calculateWinner(squares) {
+function calculateWinner(squares: Squares): string {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
